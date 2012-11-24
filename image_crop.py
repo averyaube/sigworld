@@ -2,14 +2,16 @@ import Image
 import random
 import pymongo
 import bson
-import StringIO
+from StringIO import StringIO
 import requests
 
+# Do we care about configuration for this?
 db = pymongo.Connection()
 pics = db.sigs.pics
+links = db.sigs.links
 
 
-def get_section(content, size):
+def store_section(content, size):
     """saves out a fucking section of an image file of the passed in image filename & dimensions"""
     image = Image.open(content)
     # gets the max coordinates we could be
@@ -21,16 +23,27 @@ def get_section(content, size):
     # create brand new image from region
     newImage = image.crop(region)
     # save out image
-    buf = StringIO.StringIO()
+    buf = StringIO()
     newImage.save(buf, format="PNG")
     pics.insert({
         'rand': random.random(),
         'img': bson.binary.Binary(buf.getvalue())
     })
 
-thing = "http://i625.photobucket.com/albums/tt338/candlelight-demise/Horses/Horses.png"
 
-r = requests.get(thing)
+def process_image(url):
+    """fukin takes an image url and turns it into a sig!!!"""
+    r = requests.get(url)
+    if r.status_code == 200:
+        buff = StringIO(r.content)
+        store_section(buff, (325, 60))
+        return True
+    else:
+        return False
 
-content = StringIO.StringIO(r.content)
-get_section(content, (325, 60))
+
+def insert_link(url):
+    links.insert({
+        'rand': random.random(),
+        'url': url
+    })

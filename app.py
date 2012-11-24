@@ -10,13 +10,15 @@ mongo = PyMongo(app)
 
 @app.route('/link')
 def random_url():
-    link = mongo.db.links.find_one_or_404({"rand": {"$gte": random()}})
+    order = 1 if random() > 0.5 else -1
+    link = mongo.db.links.find_one_or_404({"rand": {"$gte": random()}}, sort=[('rand', order)])
     return redirect(link['url'])
 
 
 @app.route('/pic')
 def random_pic():
-    pic = mongo.db.pics.find_one_or_404({"rand": {"$lte": 0.4}})  # random()}})
+    order = 1 if random() > 0.5 else -1
+    pic = mongo.db.pics.find_one_or_404({"rand": {"$gte": random()}}, sort=[('rand', order)])
     return make_response((pic['img'], 200, {'Content-Type': 'image/png'}))
 
 
