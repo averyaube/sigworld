@@ -21,11 +21,11 @@ def random_word():
 if __name__ == '__main__':
     for term in [random_word() for x in range(5, 10)]:
         print "Searching " + term
-        # links = [item['link'] for item in link_search(term)]
-        # for i in range(0, 5):
-        #     link = choice(links)
-        #     print "Inserting " + link
-        #     insert_link(link)
+        links = [item['link'] for item in link_search(term)]
+        for i in range(0, 5):
+            link = choice(links)
+            print "Inserting " + link
+            insert_link(link)
         pics = [item['link'] for item in image_search(term + " png")]
         for i in range(0, 5):
             pic = choice(pics)
